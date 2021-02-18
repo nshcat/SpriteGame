@@ -1,0 +1,7 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/SpriteGame/.vs/SpriteGame
+/SpriteGame/SpriteGame/bin/Debug/netcoreapp3.1
+/SpriteGame/SpriteGame/obj
