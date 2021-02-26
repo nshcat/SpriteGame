@@ -8,11 +8,17 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
+using SpriteGame.Rendering;
+using SpriteGame.Rendering.Sprites;
 
 namespace SpriteGame
 {
     public sealed class MainWindow : GameWindow
     {
+        SpriteSheet _sheet;
+        OrthographicProjection _projection;
+        Sprite _sprite;
+
         public MainWindow()
             : base(GameWindowSettings.Default, NativeWindowSettings.Default)
         {
@@ -27,6 +33,14 @@ namespace SpriteGame
             // Set background color to black
             GL.ClearColor(Color4.Black);
 
+            // Enable transparency
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+            this._sheet = new SpriteSheet("sheet2.png", 64, 64);
+            this._projection = new OrthographicProjection();
+            this._sprite = new Sprite(this._sheet) { SpriteIndex = 0 };
+
             base.OnLoad();
         }
 
@@ -37,6 +51,7 @@ namespace SpriteGame
         {
             // Resize OpenGL viewport to fit the new screen size
             GL.Viewport(0, 0, e.Width, e.Height);
+            this._projection.Refresh(e.Width, e.Height);
             base.OnResize(e);
         }
 
@@ -57,7 +72,9 @@ namespace SpriteGame
             // Clear the window with black
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            // XXX Do actual rendering here
+            var renderParams = this._projection.Params;
+
+            this._sprite.Render(renderParams);
 
             // Present frame
             Context.SwapBuffers();

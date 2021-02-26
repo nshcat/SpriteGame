@@ -48,8 +48,6 @@ namespace SpriteGame.Rendering.Sprites
             this._program.Use();
             this._program.LoadMatrices(rp);
             this._program.SetInt("sprite_sheet", 0);
-            this._program.SetInt("sprite_width", this._sheet.SpriteWidth);
-            this._program.SetInt("sprite_height", this._sheet.SpriteHeight);
             this._program.SetInt("sprites_in_x", this._sheet.SpritesInX);
             this._program.SetInt("sprites_in_y", this._sheet.SpritesInY);
             this._program.SetInt("sprite_index", this.SpriteIndex);

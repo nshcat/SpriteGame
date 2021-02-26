@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using OpenTK.Mathematics;
 
 namespace SpriteGame.Rendering.Sprites
 {
@@ -45,7 +46,26 @@ namespace SpriteGame.Rendering.Sprites
         /// </summary>
         private void BuildMesh()
         {
-            throw new NotImplementedException();
+            var width = (float)this.Sheet.SpriteWidth;
+            var height = (float)this.Sheet.SpriteHeight;
+
+            //   1
+            //   +
+            //   | \
+            // 3 +--+ 2
+            this._mesh.AddVertex(new Vector3(0.0f, height, 0.0f), new Vector2(0.0f, 1.0f));
+            this._mesh.AddVertex(new Vector3(width, 0.0f, 0.0f), new Vector2(1.0f, 0.0f));
+            this._mesh.AddVertex(new Vector3(0.0f, 0.0f, 0.0f), new Vector2(0.0f, 0.0f));
+
+            //   1   2
+            //    +--+
+            //     \ |
+            //       + 3
+            this._mesh.AddVertex(new Vector3(0.0f, height, 0.0f), new Vector2(0.0f, 1.0f));
+            this._mesh.AddVertex(new Vector3(width, height, 0.0f), new Vector2(1.0f, 1.0f));
+            this._mesh.AddVertex(new Vector3(width, 0.0f, 0.0f), new Vector2(1.0f, 0.0f));
+
+            this._mesh.Build();
         }
 
         /// <summary>

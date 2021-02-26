@@ -19,7 +19,7 @@ namespace SpriteGame.Rendering.Sprites
 
             out vec4 color;
 
-            int main()
+            void main()
             {
 	            color = texture(sprite_sheet, out_tex_coords);
             }
