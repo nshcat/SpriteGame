@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using OpenTK.Mathematics;
+using OpenTK.Graphics.OpenGL4;
 
 namespace SpriteGame.Rendering.Sprites
 {
@@ -11,6 +12,53 @@ namespace SpriteGame.Rendering.Sprites
     class Sprite : IRenderable
     {
         /// <summary>
+        /// Vertex structure for sprites
+        /// </summary>
+        private struct SpriteVertex : IVertex<SpriteVertex>
+        {
+            // Vertex position
+            private readonly Vector3 _position;
+
+            // Texture coordinates
+            private readonly Vector2 _texCoords;
+
+            /// <summary>
+            /// Texture coordinates for this vertex
+            /// </summary>
+            public Vector2 TextureCoordinates => _texCoords;
+
+            /// <summary>
+            /// Position of this vertex
+            /// </summary>
+            public Vector3 Position => _position;
+
+            /// <summary>
+            /// Size of a vertex, in bytes
+            /// </summary>
+            public int Size => sizeof(float) * 5;
+
+            /// <summary>
+            /// Vertex attribute descriptors for this type
+            /// </summary>
+            public VertexAttributeDescription[] Attributes => new VertexAttributeDescription[]
+            {
+                new VertexAttributeDescription(VertexAttribType.Float, 3),  // Position (Vec3)
+                new VertexAttributeDescription(VertexAttribType.Float, 2)   // TexCoords (Vec2)
+            };
+
+            /// <summary>
+            /// Create new sprite vertex
+            /// </summary>
+            /// <param name="position">Vertex position</param>
+            /// <param name="texCoords">Vertex texture coordinates</param>
+            public SpriteVertex(Vector3 position, Vector2 texCoords)
+            {
+                _position = position;
+                _texCoords = texCoords;
+            }
+        }
+
+        /// <summary>
         /// The sprite sheet this sprite uses to rendering
         /// </summary>
         public SpriteSheet Sheet { get; protected set; }
@@ -18,7 +66,8 @@ namespace SpriteGame.Rendering.Sprites
         /// <summary>
         /// The internal triangle mesh used to render the sprite
         /// </summary>
-        private TriangleList _mesh = new TriangleList();
+        private Mesh<SpriteVertex> _mesh
+            = new Mesh<SpriteVertex>(MeshPrimitiveMode.Triangles, MeshRenderMode.Indexed);
 
         /// <summary>
         /// The material used to render the sprite
@@ -49,21 +98,32 @@ namespace SpriteGame.Rendering.Sprites
             var width = (float)this.Sheet.SpriteWidth;
             var height = (float)this.Sheet.SpriteHeight;
 
-            //   1
+            // We want the model space coordinates of the quad to be centered
+            // around the origin, in order to allow easier roation
+            var hwidth = width / 2f;
+            var hheight = height / 2f;
+
+            // The four vertices of the quad
+            this._mesh.AddVertex(new SpriteVertex(new Vector3(-hwidth, hheight, 0.0f), new Vector2(0.0f, 1.0f)));
+            this._mesh.AddVertex(new SpriteVertex(new Vector3(hwidth, -hheight, 0.0f), new Vector2(1.0f, 0.0f)));
+            this._mesh.AddVertex(new SpriteVertex(new Vector3(-hwidth, -hheight, 0.0f), new Vector2(0.0f, 0.0f)));
+            this._mesh.AddVertex(new SpriteVertex(new Vector3(hwidth, hheight, 0.0f), new Vector2(1.0f, 1.0f)));
+
+            //   0
             //   +
             //   | \
-            // 3 +--+ 2
-            this._mesh.AddVertex(new Vector3(0.0f, height, 0.0f), new Vector2(0.0f, 1.0f));
-            this._mesh.AddVertex(new Vector3(width, 0.0f, 0.0f), new Vector2(1.0f, 0.0f));
-            this._mesh.AddVertex(new Vector3(0.0f, 0.0f, 0.0f), new Vector2(0.0f, 0.0f));
+            // 2 +--+ 1
+            this._mesh.AddIndex(0);
+            this._mesh.AddIndex(1);
+            this._mesh.AddIndex(2);
 
-            //   1   2
+            //   0   3
             //    +--+
             //     \ |
-            //       + 3
-            this._mesh.AddVertex(new Vector3(0.0f, height, 0.0f), new Vector2(0.0f, 1.0f));
-            this._mesh.AddVertex(new Vector3(width, height, 0.0f), new Vector2(1.0f, 1.0f));
-            this._mesh.AddVertex(new Vector3(width, 0.0f, 0.0f), new Vector2(1.0f, 0.0f));
+            //       + 1
+            this._mesh.AddIndex(0);
+            this._mesh.AddIndex(3);
+            this._mesh.AddIndex(1);
 
             this._mesh.Build();
         }
@@ -74,7 +134,7 @@ namespace SpriteGame.Rendering.Sprites
         /// <param name="rp">Current rendering parameters</param>
         public void Render(RenderParams rp)
         {
-            this.Sheet.Use(OpenTK.Graphics.OpenGL4.TextureUnit.Texture0);
+            this.Sheet.Use(TextureUnit.Texture0);
             this._material.SpriteIndex = this.SpriteIndex;
             this._material.Use(rp);
             this._mesh.Render();

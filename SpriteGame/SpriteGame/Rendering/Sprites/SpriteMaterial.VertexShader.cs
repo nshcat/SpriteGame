@@ -37,12 +37,10 @@ namespace SpriteGame.Rendering.Sprites
 
                 tex_coords_in_sprite.y = tex_coords_in_sprite.y + float(sprites_in_y - 1) * tex_sprite_height;
 
-	
 	            uint sprite_index_x = sprite_index % sprites_in_x;
 	            uint sprite_index_y = sprite_index / sprites_in_x;
 	
 	            vec2 vec_sprite_offset = vec2(float(sprite_index_x), float(sprite_index_y)) * tex_sprite_dims;
-	
 	
 	            vec2 tex_coords_absolute = tex_coords_in_sprite + vec_sprite_offset;
 	

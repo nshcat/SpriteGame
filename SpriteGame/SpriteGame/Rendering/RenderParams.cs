@@ -79,12 +79,86 @@ namespace SpriteGame.Rendering
         }
 
         /// <summary>
-        /// Modify the model transformation matrix by applying a translation by given vector to it.
+        /// Add a translation to the model matrix
         /// </summary>
         /// <param name="v">Vector to translate by</param>
         public void Translate(Vector3 v)
         {
             var mat = Matrix4.CreateTranslation(v);
+            Model = Model * mat;
+        }
+
+        /// <summary>
+        /// Add a translation to the model matrix
+        /// </summary>
+        /// <param name="x">X component of the translation</param>
+        /// <param name="y">Y component of the translation</param>
+        /// <param name="z">Z component of the translation</param>
+        public void Translate(float x, float y, float z)
+        {
+            this.Translate(new Vector3(x, y, z));
+        }
+
+        /// <summary>
+        /// Add a scale operation to the model matrix
+        /// </summary>
+        /// <param name="x">Scaling in X direction</param>
+        /// <param name="y">Scaling in Y direction</param>
+        /// <param name="z">Scaling in Z direction</param>
+        public void Scale(float x, float y, float z)
+        {
+            var mat = Matrix4.CreateScale(x, y, z);
+            Model = Model * mat;
+        }
+
+        /// <summary>
+        /// Add a uniform scale operation to the model matrix
+        /// </summary>
+        /// <param name="f">Scaling factor</param>
+        public void Scale(float f)
+        {
+            var mat = Matrix4.CreateScale(f);
+            Model = Model * mat;
+        }
+
+        /// <summary>
+        /// Add a rotation around the X axis to the model matrix
+        /// </summary>
+        /// <param name="angle">Rotation angle, in radians</param>
+        public void RotateX(float angle)
+        {
+            var mat = Matrix4.CreateRotationX(angle);
+            Model = Model * mat;
+        }
+
+        /// <summary>
+        /// Add a rotation around the Y axis to the model matrix
+        /// </summary>
+        /// <param name="angle">Rotation angle, in radians</param>
+        public void RotateY(float angle)
+        {
+            var mat = Matrix4.CreateRotationY(angle);
+            Model = Model * mat;
+        }
+
+        /// <summary>
+        /// Add a rotation around the Z axis to the model matrix
+        /// </summary>
+        /// <param name="angle">Rotation angle, in radians</param>
+        public void RotateZ(float angle)
+        {
+            var mat = Matrix4.CreateRotationZ(angle);
+            Model = Model * mat;
+        }
+
+        /// <summary>
+        /// Add a rotation around the an arbitrary axis to the model matrix
+        /// </summary>
+        /// <param name="axis">Roation axis</param>
+        /// <param name="angle">Rotation angle, in radians</param>
+        public void Rotate(Vector3 axis, float angle)
+        {
+            var mat = Matrix4.CreateFromAxisAngle(axis, angle);
             Model = Model * mat;
         }
     }

@@ -10,6 +10,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using SpriteGame.Rendering;
 using SpriteGame.Rendering.Sprites;
+using SpriteGame.Rendering.Particles;
 
 namespace SpriteGame
 {
@@ -18,9 +19,16 @@ namespace SpriteGame
         SpriteSheet _sheet;
         OrthographicProjection _projection;
         Sprite _sprite;
+        ParticleSystem _system;
 
         public MainWindow()
-            : base(GameWindowSettings.Default, NativeWindowSettings.Default)
+            : base( GameWindowSettings.Default,
+                    new NativeWindowSettings
+                    {
+                        NumberOfSamples = 16,
+                        Title = "SpriteGame",
+                        Size = new Vector2i(1240, 720)
+                    })
         {
 
         }
@@ -40,6 +48,7 @@ namespace SpriteGame
             this._sheet = new SpriteSheet("sheet2.png", 64, 64);
             this._projection = new OrthographicProjection();
             this._sprite = new Sprite(this._sheet) { SpriteIndex = 0 };
+            this._system = new ParticleSystem();
 
             base.OnLoad();
         }
@@ -61,6 +70,8 @@ namespace SpriteGame
         /// <param name="args"></param>
         protected override void OnUpdateFrame(FrameEventArgs args)
         {
+            this._system.Update((float)args.Time);
+
             base.OnUpdateFrame(args);
         }
 
@@ -74,8 +85,9 @@ namespace SpriteGame
 
             var renderParams = this._projection.Params;
 
+            //this._system.Render(renderParams);
             this._sprite.Render(renderParams);
-
+ 
             // Present frame
             Context.SwapBuffers();
 

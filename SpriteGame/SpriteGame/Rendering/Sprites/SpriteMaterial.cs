@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace SpriteGame.Rendering.Sprites
 {
@@ -45,12 +46,18 @@ namespace SpriteGame.Rendering.Sprites
         /// <param name="rp">Current rendering parameters</param>
         public void Use(RenderParams rp)
         {
+            rp.PushMatrix();
+            //rp.RotateZ((float)Math.PI / 4.0f);
+            rp.Translate(100, 100, 0);
+
             this._program.Use();
             this._program.LoadMatrices(rp);
             this._program.SetInt("sprite_sheet", 0);
             this._program.SetInt("sprites_in_x", this._sheet.SpritesInX);
             this._program.SetInt("sprites_in_y", this._sheet.SpritesInY);
             this._program.SetInt("sprite_index", this.SpriteIndex);
+
+            rp.PopMatrix();
         }
     }
 }
