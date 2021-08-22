@@ -46,11 +46,13 @@ namespace SpriteGame.Simulation
         /// <summary>
         /// The sprite layer this collider exists on. 
         /// </summary>
-        /// <remarks>
-        /// Layer 0 is the lowest layer, and sprites will be rendered in order of their layer association.
-        /// Note that this does not affect collision calculations.
-        /// </remarks>
-        public uint Layer { get; protected set; }
+        public WorldLayer Layer { get; protected set; }
+
+        /// <summary>
+        /// The world layers this object will not collide with
+        /// </summary>
+        public HashSet<WorldLayer> IgnoredLayers { get; set; }
+            = new HashSet<WorldLayer> { WorldLayer.Background };
 
         /// <summary>
         /// Create new transformed collider
@@ -58,7 +60,7 @@ namespace SpriteGame.Simulation
         /// <param name="position"></param>
         /// <param name="size"></param>
         /// <param name="layer"></param>
-        public TransformedCollider(Vector2 position, Vector2 size, uint layer)
+        public TransformedCollider(Vector2 position, Vector2 size, WorldLayer layer)
         {
             this.Position = position;
             this.Size = size;
@@ -83,19 +85,16 @@ namespace SpriteGame.Simulation
             rp.Translate(new Vector3(this.Position.X, this.Position.Y, (float)this.Layer * 0.15f));
         }
 
-        /// <summary>
-        /// Translate collider by given direction vector
-        /// </summary>
-        /// <param name="direction">Direction to translate by</param>
-        public void Translate(Vector2 direction)
+        public void ApplyForce(Vector2 force)
         {
-            this.Position += direction;
+
         }
 
-        /// <summary>
-        /// Update collider based on its current velocity
-        /// </summary>
-        /// <param name="deltaTime"></param>
+        public void StopMovement()
+        {
+
+        }
+
         public void Update(float deltaTime)
         {
             throw new NotImplementedException();
