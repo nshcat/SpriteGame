@@ -81,9 +81,10 @@ namespace SpriteGame
         protected override void OnRenderFrame(FrameEventArgs args)
         {
             // Clear the window with black
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             var renderParams = this._projection.Params;
+            renderParams.Translate(100.0f, 100.0f, 0.0f);
 
             //this._system.Render(renderParams);
             this._sprite.Render(renderParams);

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SpriteGame.Rendering
+namespace SpriteGame.Simulation
 {
     /// <summary>
     /// Interface for game objects that have state that is periodically

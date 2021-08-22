@@ -6,7 +6,7 @@ using OpenTK.Mathematics;
 
 namespace SpriteGame.Rendering.Particles
 {
-    partial class ParticleSystem : IRenderable, ISimulationObject
+    partial class ParticleSystem : IRenderable//, ISimulationObject
     {
         /// <summary>
         /// Information about a single particle

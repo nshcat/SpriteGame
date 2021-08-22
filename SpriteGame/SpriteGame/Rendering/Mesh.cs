@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
@@ -64,7 +65,7 @@ namespace SpriteGame.Rendering
     /// TODO:
     /// - Primitive restart, maybe with Optional<int>
     /// - Wireframe and line width support
-    class Mesh<T> where T : struct, IVertex<T>
+    class Mesh<T> where T : struct
     {
         /// <summary>
         /// Temporary list of vertex data used to build the triangle list.
@@ -120,6 +121,79 @@ namespace SpriteGame.Rendering
         {
             this.PrimitiveMode = primitiveMode;
             this.RenderMode = renderMode;
+        }
+
+        /// <summary>
+        /// Retrieve all attribute descriptions using reflection
+        /// </summary>
+        public static VertexAttributeDescription[] GetDescriptions()
+        {
+            var infoMap = new Dictionary<Type, (VertexAttribType, int)>()
+            {
+                [typeof(float)] = (VertexAttribType.Float, 1),
+                [typeof(int)] = (VertexAttribType.Int, 1),
+                [typeof(uint)] = (VertexAttribType.UnsignedInt, 1),
+                [typeof(Vector2)] = (VertexAttribType.Float, 2),
+                [typeof(Vector3)] = (VertexAttribType.Float, 3),
+                [typeof(Vector4)] = (VertexAttribType.Float, 4),
+                [typeof(Color4)] = (VertexAttribType.Float, 4)
+            };
+
+            var descriptions = new List<VertexAttributeDescription>();
+
+            var ty = typeof(T);
+            var fields = ty.GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+
+            foreach (var field in fields)
+            {
+                if (field.GetCustomAttribute<VertexAttribute>() == null)
+                    continue;
+
+                if (!infoMap.ContainsKey(field.FieldType))
+                    throw new InvalidOperationException($"Vertex attribute field {field.Name} has incompatible type");
+
+                var (attribType, length) = infoMap[field.FieldType];
+
+                descriptions.Add(new VertexAttributeDescription(attribType, length));
+            }
+
+            return descriptions.ToArray();
+        }
+
+        /// <summary>
+        /// Retrieve size of vertex, in bytes
+        /// </summary>
+        /// <returns></returns>
+        public static int GetVertexSize()
+        {
+            int size = 0;
+
+            var sizeMap = new Dictionary<Type, int>()
+            {
+                [typeof(float)] = 4,
+                [typeof(int)] = 4,
+                [typeof(uint)] = 4,
+                [typeof(Vector2)] = 4 * 2,
+                [typeof(Vector3)] = 4 * 3,
+                [typeof(Vector4)] = 4 * 4,
+                [typeof(Color4)] = 4 * 4
+            };
+
+            var ty = typeof(T);
+            var fields = ty.GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+
+            foreach (var field in fields)
+            {
+                if (field.GetCustomAttribute<VertexAttribute>() == null)
+                    continue;
+
+                if (!sizeMap.ContainsKey(field.FieldType))
+                    throw new InvalidOperationException($"Vertex attribute field {field.Name} has incompatible type");
+
+                size += sizeMap[field.FieldType];
+            }
+
+            return size;
         }
 
         /// <summary>
@@ -184,7 +258,7 @@ namespace SpriteGame.Rendering
             // Fill it with our data
             GL.NamedBufferData(
                 VBOHandle,
-                this.vertexData[0].Size * vertexData.Count,
+                GetVertexSize() * vertexData.Count,
                 vertexData.ToArray(),
                 BufferUsageHint.StaticDraw);
 
@@ -193,7 +267,7 @@ namespace SpriteGame.Rendering
             int accumulatedLength = 0;
             int currentAttrib = 0;
 
-            var descriptors = this.vertexData[0].Attributes;
+            var descriptors = GetDescriptions();
 
             foreach(var attrib in descriptors)
             {
@@ -212,7 +286,7 @@ namespace SpriteGame.Rendering
             }
 
             // Associate vertex buffer object with our vertex array object
-            GL.VertexArrayVertexBuffer(VAOHandle, 0, VBOHandle, IntPtr.Zero, vertexData[0].Size);
+            GL.VertexArrayVertexBuffer(VAOHandle, 0, VBOHandle, IntPtr.Zero, GetVertexSize());
 
             // Create vertex index buffer, if needed
             if(this.RenderMode == MeshRenderMode.Indexed)
