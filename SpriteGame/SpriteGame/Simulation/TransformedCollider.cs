@@ -8,12 +8,15 @@ using SpriteGame.Rendering;
 namespace SpriteGame.Simulation
 {
     // TODO implement rotation => We just need a different way to calculate AABB
+    // TODO velocity, Update, ApplyForce()
 
     /// <summary>
     /// Object that manages both the position and bounding info for a game object.
     /// </summary>
-    class TransformedCollider
+    class TransformedCollider : ISimulationObject
     {
+        private Vector2 _position;
+
         /// <summary>
         /// The bounding box used for collision detection
         /// </summary>
@@ -22,7 +25,18 @@ namespace SpriteGame.Simulation
         /// <summary>
         /// The current center position of the collider
         /// </summary>
-        public Vector2 Position { get; protected set; }
+        public Vector2 Position
+        {
+            get
+            {
+                return this._position;
+            }
+            set
+            {
+                this._position = value;
+                this.UpdateBoundingBox();
+            }
+        }
 
         /// <summary>
         /// The size of the collider (width and height)
@@ -76,7 +90,15 @@ namespace SpriteGame.Simulation
         public void Translate(Vector2 direction)
         {
             this.Position += direction;
-            this.UpdateBoundingBox();
+        }
+
+        /// <summary>
+        /// Update collider based on its current velocity
+        /// </summary>
+        /// <param name="deltaTime"></param>
+        public void Update(float deltaTime)
+        {
+            throw new NotImplementedException();
         }
     }
 }
