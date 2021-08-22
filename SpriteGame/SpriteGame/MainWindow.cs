@@ -11,9 +11,7 @@ using OpenTK.Windowing.Common;
 using SpriteGame.Rendering;
 using SpriteGame.Rendering.Sprites;
 using SpriteGame.Rendering.Particles;
-/// <summary>
-///  Irgendwie irgendwas zum testen oder so
-/// </summary>
+
 namespace SpriteGame
 {
     public sealed class MainWindow : GameWindow
